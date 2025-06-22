@@ -1,96 +1,69 @@
-# @formcraft/core
+# @otitoju/formcraft-core
 
-A lightweight, TypeScript-first form management library for React and React Native with built-in validation and components.
+<div align="center">
 
-## Features
+🚀 **Lightweight, TypeScript-first form management library for React and React Native**
 
-- 🚀 **Lightweight** - Minimal bundle size with zero dependencies
-- 🔧 **TypeScript First** - Full TypeScript support with excellent IntelliSense
+[![npm version](https://badge.fury.io/js/@otitoju%2Fformcraft-core.svg)](https://www.npmjs.com/package/@otitoju/formcraft-core)
+[![Downloads](https://img.shields.io/npm/dm/@otitoju/formcraft-core.svg)](https://www.npmjs.com/package/@otitoju/formcraft-core)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@otitoju/formcraft-core)](https://bundlephobia.com/package/@otitoju/formcraft-core)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+</div>
+
+## ✨ Why FormCraft?
+
+- 🪶 **Ultra Lightweight** - Only ~5KB gzipped, zero dependencies
+- 🔧 **TypeScript First** - Full type safety with excellent IntelliSense
 - 🌐 **Cross Platform** - Works seamlessly with React and React Native
-- ✅ **Built-in Validation** - Zod-inspired schema validation
-- 🎯 **Performance Focused** - Optimized re-renders and efficient updates
-- 📱 **Responsive** - Built-in components for both web and mobile
-- 🎨 **Customizable** - Flexible styling and component customization
+- ⚡ **Performance Focused** - Optimized re-renders and efficient updates
+- 🎯 **Developer Experience** - Simple API inspired by React Hook Form
+- ✅ **Built-in Validation** - Zod-inspired schema validation included
+- 📱 **Mobile Ready** - Native components for React Native
 - ♿ **Accessible** - WCAG compliant with proper ARIA attributes
 
-## Installation
+## 🚀 Quick Start
 
 \`\`\`bash
-npm install @formcraft/core
+npm install @otitoju/formcraft-core
 # or
-yarn add @formcraft/core
+yarn add @otitoju/formcraft-core
 # or
-pnpm add @formcraft/core
+pnpm add @otitoju/formcraft-core
 \`\`\`
 
-## Quick Start
-
-### Web (React/Next.js)
+### React/Next.js Example
 
 \`\`\`tsx
-import { useForm, WebFormProvider, WebInput, Schema } from '@formcraft/core';
-import '@formcraft/core/dist/web.css'; // Optional default styles
+import { useForm, WebFormProvider, WebInput, Schema } from '@otitoju/formcraft-core';
+import '@otitoju/formcraft-core/dist/web.css'; // Optional default styles
 
 interface FormData {
   email: string;
   password: string;
-  confirmPassword: string;
 }
 
-const validationSchema = {
-  email: Schema.email().required('Email is required'),
-  password: Schema.string().min(8, 'Password must be at least 8 characters').required(),
-  confirmPassword: Schema.string().required('Please confirm your password')
-    .custom((value, formData) => {
-      return value === formData.password || 'Passwords do not match';
-    })
-};
-
-function SignupForm() {
+function LoginForm() {
   const form = useForm<FormData>({
-    defaultValues: {
-      email: '',
-      password: '',
-      confirmPassword: ''
-    },
-    validation: validationSchema,
-    mode: 'onChange'
+    defaultValues: { email: '', password: '' },
+    validation: {
+      email: Schema.email().required('Email is required'),
+      password: Schema.string().min(8, 'At least 8 characters').required()
+    }
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = (data: FormData) => {
     console.log('Form submitted:', data);
-    // Handle form submission
   };
 
   return (
     <WebFormProvider form={form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
-        <WebInput
-          name="email"
-          type="email"
-          label="Email Address"
-          placeholder="Enter your email"
-        />
-        
-        <WebInput
-          name="password"
-          type="password"
-          label="Password"
-          placeholder="Enter your password"
-        />
-        
-        <WebInput
-          name="confirmPassword"
-          type="password"
-          label="Confirm Password"
-          placeholder="Confirm your password"
-        />
-        
-        <button 
-          type="submit" 
-          disabled={!form.formState.isValid || form.formState.isSubmitting}
-        >
-          {form.formState.isSubmitting ? 'Creating Account...' : 'Sign Up'}
+        <WebInput name="email" label="Email" type="email" />
+        <WebInput name="password" label="Password" type="password" />
+        <button type="submit" disabled={!form.formState.isValid}>
+          Sign In
         </button>
       </form>
     </WebFormProvider>
@@ -98,69 +71,30 @@ function SignupForm() {
 }
 \`\`\`
 
-### React Native
+### React Native Example
 
 \`\`\`tsx
-import React from 'react';
+import { useForm, NativeFormProvider, NativeInput, Schema } from '@otitoju/formcraft-core';
 import { View, Button } from 'react-native';
-import { useForm, NativeFormProvider, NativeInput, Schema } from '@formcraft/core';
-
-interface FormData {
-  name: string;
-  email: string;
-  message: string;
-}
-
-const validationSchema = {
-  name: Schema.string().required('Name is required').min(2, 'Name must be at least 2 characters'),
-  email: Schema.email().required('Email is required'),
-  message: Schema.string().required('Message is required').min(10, 'Message must be at least 10 characters')
-};
 
 function ContactForm() {
-  const form = useForm<FormData>({
-    defaultValues: {
-      name: '',
-      email: '',
-      message: ''
-    },
-    validation: validationSchema
+  const form = useForm({
+    defaultValues: { name: '', email: '' },
+    validation: {
+      name: Schema.string().required('Name is required'),
+      email: Schema.email().required('Email is required')
+    }
   });
-
-  const onSubmit = async (data: FormData) => {
-    console.log('Form submitted:', data);
-    // Handle form submission
-  };
 
   return (
     <NativeFormProvider form={form}>
-      <View style={{ padding: 20 }}>
-        <NativeInput
-          name="name"
-          label="Full Name"
-          placeholder="Enter your name"
-        />
-        
-        <NativeInput
-          name="email"
-          label="Email Address"
-          placeholder="Enter your email"
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        
-        <NativeInput
-          name="message"
-          label="Message"
-          placeholder="Enter your message"
-          multiline
-          numberOfLines={4}
-        />
-        
-        <Button
-          title={form.formState.isSubmitting ? 'Sending...' : 'Send Message'}
-          onPress={form.handleSubmit(onSubmit)}
-          disabled={!form.formState.isValid || form.formState.isSubmitting}
+      <View>
+        <NativeInput name="name" label="Name" />
+        <NativeInput name="email" label="Email" keyboardType="email-address" />
+        <Button 
+          title="Submit" 
+          onPress={form.handleSubmit(console.log)}
+          disabled={!form.formState.isValid}
         />
       </View>
     </NativeFormProvider>
@@ -168,29 +102,27 @@ function ContactForm() {
 }
 \`\`\`
 
-## API Reference
+## 📚 Documentation
 
-### useForm Hook
-
-The main hook for form management.
+### Core Hook
 
 \`\`\`tsx
-const form = useForm<T>({
-  defaultValues?: Partial<T>;
-  validation?: Record<string, ValidationRule>;
-  onSubmit?: (data: T) => void | Promise<void>;
-  mode?: 'onChange' | 'onBlur' | 'onSubmit';
+const form = useForm({
+  defaultValues: { name: '', email: '' },
+  validation: {
+    name: Schema.string().required().min(2),
+    email: Schema.email().required()
+  },
+  mode: 'onChange' // 'onChange' | 'onBlur' | 'onSubmit'
 });
 \`\`\`
 
 ### Schema Validation
 
-Build validation schemas with a fluent API:
-
 \`\`\`tsx
 const schema = {
   email: Schema.email().required('Email is required'),
-  age: Schema.number().min(18, 'Must be 18 or older').max(100),
+  age: Schema.number().min(18, 'Must be 18+').max(100),
   website: Schema.url().required(),
   password: Schema.string()
     .min(8, 'At least 8 characters')
@@ -201,8 +133,6 @@ const schema = {
 \`\`\`
 
 ### Form State
-
-Access comprehensive form state:
 
 \`\`\`tsx
 const {
@@ -216,71 +146,28 @@ const {
 } = form.formState;
 \`\`\`
 
-### Form Methods
+## 🎯 Comparison
 
-\`\`\`tsx
-const {
-  register,     // Register form fields
-  setValue,     // Set field value programmatically
-  getValue,     // Get field value
-  getValues,    // Get all form values
-  setError,     // Set field error
-  clearError,   // Clear field error
-  clearErrors,  // Clear all errors
-  reset,        // Reset form to initial state
-  handleSubmit, // Handle form submission
-  watch,        // Watch field changes
-  trigger       // Trigger validation
-} = form;
-\`\`\`
+| Feature | FormCraft | React Hook Form | Formik |
+|---------|-----------|-----------------|--------|
+| Bundle Size | ~5KB | ~25KB | ~45KB |
+| TypeScript | ✅ Built-in | ✅ Good | ⚠️ Basic |
+| React Native | ✅ Native | ❌ Manual | ❌ Manual |
+| Validation | ✅ Built-in | ❌ External | ❌ External |
+| Learning Curve | 🟢 Easy | 🟡 Medium | 🔴 Hard |
+| Performance | ⚡ Excellent | ⚡ Excellent | 🟡 Good |
 
-## Components
-
-### Web Components
-
-- `WebInput` - Text input with validation
-- `WebSelect` - Dropdown select with options
-- `WebTextarea` - Multi-line text input
-- `WebCheckbox` - Checkbox input
-- `WebFormProvider` - Form context provider
-
-### Native Components
-
-- `NativeInput` - React Native TextInput with validation
-- `NativeSelect` - Custom select component with modal
-- `NativeCheckbox` - Custom checkbox component
-- `NativeFormProvider` - Form context provider
-
-## Advanced Usage
+## 🛠️ Advanced Usage
 
 ### Conditional Fields
 
 \`\`\`tsx
-const form = useForm({
-  defaultValues: { type: '', details: '' }
-});
-
-// Show details field only when type is selected
 const showDetails = form.watch('type') !== '';
 
 return (
   <WebFormProvider form={form}>
-    <WebSelect
-      name="type"
-      label="Type"
-      options={[
-        { value: 'bug', label: 'Bug Report' },
-        { value: 'feature', label: 'Feature Request' }
-      ]}
-    />
-    
-    {showDetails && (
-      <WebTextarea
-        name="details"
-        label="Details"
-        placeholder="Describe in detail..."
-      />
-    )}
+    <WebSelect name="type" options={typeOptions} />
+    {showDetails && <WebTextarea name="details" />}
   </WebFormProvider>
 );
 \`\`\`
@@ -288,13 +175,12 @@ return (
 ### Custom Validation
 
 \`\`\`tsx
-const customValidation = {
+const validation = {
   username: Schema.string()
     .required('Username is required')
-    .min(3, 'At least 3 characters')
     .custom(async (value) => {
-      const isAvailable = await checkUsernameAvailability(value);
-      return isAvailable || 'Username is already taken';
+      const isAvailable = await checkAvailability(value);
+      return isAvailable || 'Username is taken';
     })
 };
 \`\`\`
@@ -302,100 +188,99 @@ const customValidation = {
 ### Dynamic Forms
 
 \`\`\`tsx
-function DynamicForm() {
-  const [fields, setFields] = useState(['field1']);
-  const form = useForm();
+const [fields, setFields] = useState(['field1']);
 
-  const addField = () => {
-    setFields(prev => [...prev, `field${prev.length + 1}`]);
-  };
-
-  return (
-    <WebFormProvider form={form}>
-      {fields.map(fieldName => (
-        <WebInput
-          key={fieldName}
-          name={fieldName}
-          label={`Field ${fieldName}`}
-        />
-      ))}
-      <button type="button" onClick={addField}>
-        Add Field
-      </button>
-    </WebFormProvider>
-  );
-}
+return (
+  <WebFormProvider form={form}>
+    {fields.map(fieldName => (
+      <WebInput key={fieldName} name={fieldName} />
+    ))}
+    <button onClick={() => setFields(prev => [...prev, `field${prev.length + 1}`])}>
+      Add Field
+    </button>
+  </WebFormProvider>
+);
 \`\`\`
 
-## Styling
+## 🎨 Styling
 
-### Web Styling
-
-Import the default CSS or create your own:
+### Web (CSS Classes)
 
 \`\`\`tsx
-import '@formcraft/core/dist/web.css';
-
-// Or use custom classes
 <WebInput
   name="email"
-  className="my-custom-input"
-  containerClassName="my-field-container"
+  className="my-input"
+  containerClassName="my-field"
   labelClassName="my-label"
   errorClassName="my-error"
 />
 \`\`\`
 
-### Native Styling
-
-Pass custom styles to components:
+### React Native (Style Objects)
 
 \`\`\`tsx
 <NativeInput
   name="email"
-  inputStyle={{ borderColor: '#blue' }}
+  inputStyle={{ borderColor: 'blue' }}
   containerStyle={{ marginBottom: 20 }}
   labelStyle={{ fontSize: 18 }}
-  errorStyle={{ color: 'red' }}
 />
 \`\`\`
 
-## TypeScript Support
+## 🤝 Migration Guides
 
-Full TypeScript support with type inference:
+### From React Hook Form
 
 \`\`\`tsx
-interface UserForm {
-  name: string;
-  email: string;
-  age: number;
-  preferences: {
-    newsletter: boolean;
-    notifications: boolean;
-  };
-}
+// React Hook Form
+const { register, handleSubmit, formState: { errors } } = useForm();
 
-const form = useForm<UserForm>({
-  defaultValues: {
-    name: '',
-    email: '',
-    age: 0,
-    preferences: {
-      newsletter: false,
-      notifications: true
-    }
-  }
-});
-
-// TypeScript will infer the correct types
-form.setValue('name', 'John'); // ✅ Valid
-form.setValue('age', '25'); // ❌ Type error
+// FormCraft
+const form = useForm();
+const field = form.register('email'); // Same API!
 \`\`\`
 
-## Contributing
+### From Formik
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+\`\`\`tsx
+// Formik
+<Formik initialValues={{ email: '' }} onSubmit={handleSubmit}>
+  <Field name="email" />
+</Formik>
 
-## License
+// FormCraft
+<WebFormProvider form={form}>
+  <WebInput name="email" />
+</WebFormProvider>
+\`\`\`
 
-MIT © FormCraft Team
+## 📦 What's Included
+
+- ✅ Core form management hook
+- ✅ Built-in validation with Schema builder
+- ✅ Web components (Input, Select, Textarea, Checkbox)
+- ✅ React Native components
+- ✅ TypeScript definitions
+- ✅ Default CSS styles
+- ✅ Comprehensive examples
+
+## 🔗 Links
+
+- [📖 Full Documentation](https://github.com/otitoju/formcraft-core#readme)
+- [🎮 Interactive Examples](https://github.com/otitoju/formcraft-core/tree/main/examples)
+- [🐛 Report Issues](https://github.com/otitoju/formcraft-core/issues)
+- [💬 Discussions](https://github.com/otitoju/formcraft-core/discussions)
+
+## 📄 License
+
+MIT © [Otitoju](https://github.com/otitoju)
+
+---
+
+<div align="center">
+
+**Made with ❤️ for the React community**
+
+[⭐ Star on GitHub](https://github.com/otitoju/formcraft-core) | [📦 View on NPM](https://www.npmjs.com/package/@otitoju/formcraft-core)
+
+</div>
